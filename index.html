@@ -1,1540 +1,578 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Scheda Allenamento — Apr→Giu 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #F7F6F3;
-  --card: #FFFFFF;
-  --text: #1A1A1A;
-  --text-secondary: #5C5C5C;
-  --accent-a: #2563EB;
-  --accent-b: #059669;
-  --accent-c: #D97706;
-  --border: #E5E3DE;
-  --tag-bg: #EEF2FF;
-  --tag-text: #3B5BDB;
-  --highlight: #FEF3C7;
-  --radius: 14px;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Training App | Apr→Giu 2026</title>
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-  font-family: 'DM Sans', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-  padding-bottom: 60px;
-}
-
-.header {
-  background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%);
-  color: #fff;
-  padding: 40px 20px 28px;
-  position: relative;
-  overflow: hidden;
-}
-.header::after {
-  content: '';
-  position: absolute;
-  top: -40%; right: -20%;
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(37,99,235,0.3) 0%, transparent 70%);
-  border-radius: 50%;
-}
-.header h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-  margin-bottom: 4px;
-}
-.header .subtitle {
-  font-size: 13px;
-  color: rgba(255,255,255,0.6);
-  font-weight: 400;
-}
-
-.objectives {
-  display: flex;
-  gap: 8px;
-  padding: 16px 20px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.objectives::-webkit-scrollbar { display: none; }
-.obj-pill {
-  flex-shrink: 0;
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-.obj-pill.postura { background: #EEF2FF; color: #2563EB; }
-.obj-pill.cardio { background: #ECFDF5; color: #059669; }
-.obj-pill.cammino { background: #FEF3C7; color: #92400E; }
-
-.section-title {
-  padding: 24px 20px 12px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--text-secondary);
-}
-
-/* Day cards */
-.day-card {
-  margin: 0 16px 12px;
-  background: var(--card);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  transition: box-shadow 0.2s;
-}
-.day-header {
-  display: flex;
-  align-items: center;
-  padding: 16px 18px;
-  cursor: pointer;
-  gap: 14px;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-.day-badge {
-  width: 42px; height: 42px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'DM Mono', monospace;
-  font-weight: 500;
-  font-size: 16px;
-  color: #fff;
-  flex-shrink: 0;
-}
-.day-a .day-badge { background: var(--accent-a); }
-.day-b .day-badge { background: var(--accent-b); }
-.day-c .day-badge { background: var(--accent-c); }
-
-.day-info { flex: 1; }
-.day-info h2 { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; }
-.day-info p { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-
-.day-chevron {
-  width: 20px; height: 20px;
-  transition: transform 0.3s ease;
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
-.day-card.open .day-chevron { transform: rotate(180deg); }
-
-.day-content {
-  display: none;
-  padding: 0 18px 20px;
-}
-.day-card.open .day-content { display: block; }
-
-/* Phase labels */
-.phase-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 18px 0 12px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--text-secondary);
-}
-.phase-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-.phase-label:first-child { margin-top: 6px; }
-
-/* Exercise cards */
-.exercise {
-  background: var(--bg);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 10px;
-  border: 1px solid transparent;
-  transition: border-color 0.2s;
-}
-.exercise.postura-highlight {
-  border-color: #C7D2FE;
-  background: linear-gradient(135deg, #F5F7FF 0%, var(--bg) 100%);
-}
-
-.exercise-top {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-}
-
-.exercise-figure {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
-  background: var(--card);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border);
-}
-.exercise-figure svg {
-  width: 48px;
-  height: 48px;
-}
-
-.exercise-info { flex: 1; min-width: 0; }
-.exercise-name {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.1px;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.postura-tag {
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  background: #EEF2FF;
-  color: #2563EB;
-  padding: 2px 7px;
-  border-radius: 4px;
-}
-.exercise-meta {
-  font-family: 'DM Mono', monospace;
-  font-size: 13px;
-  color: var(--accent-a);
-  font-weight: 500;
-}
-
-.exercise-detail {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
-.exercise-detail summary {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  list-style: none;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.exercise-detail summary::before {
-  content: '▸';
-  display: inline-block;
-  transition: transform 0.2s;
-  font-size: 10px;
-}
-.exercise-detail[open] summary::before { transform: rotate(90deg); }
-.exercise-detail .detail-text {
-  margin-top: 8px;
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-.exercise-detail .detail-text strong { color: var(--text); }
-.alt-label {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--accent-c);
-  margin-top: 6px;
-}
-
-/* Circuit format */
-.circuit-grid {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.circuit-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--bg);
-  border-radius: 10px;
-  padding: 12px 14px;
-}
-.circuit-num {
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  font-weight: 500;
-  color: #fff;
-  flex-shrink: 0;
-}
-.circuit-item .circuit-num { background: var(--accent-c); }
-.circuit-item .ex-name { font-size: 14px; font-weight: 500; flex: 1; }
-.circuit-item .ex-fig {
-  width: 40px; height: 40px;
-  flex-shrink: 0;
-}
-
-/* Tips section */
-.tip-card {
-  margin: 0 16px 10px;
-  background: var(--card);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 16px 18px;
-}
-.tip-card h3 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.tip-card p, .tip-card li {
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.55;
-}
-.tip-card ul {
-  list-style: none;
-  padding: 0;
-}
-.tip-card li {
-  padding: 6px 0;
-  padding-left: 18px;
-  position: relative;
-}
-.tip-card li::before {
-  content: '→';
-  position: absolute;
-  left: 0;
-  color: var(--accent-a);
-  font-weight: 600;
-}
-
-/* Progression table */
-.prog-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-  margin-top: 8px;
-}
-.prog-table th {
-  text-align: left;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-secondary);
-  padding: 8px 10px;
-  border-bottom: 2px solid var(--border);
-}
-.prog-table td {
-  padding: 10px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.prog-table td:first-child {
-  font-family: 'DM Mono', monospace;
-  font-weight: 500;
-  font-size: 12px;
-  white-space: nowrap;
-  color: var(--accent-a);
-}
-
-/* Stretch block */
-.stretch-block {
-  background: #FAFAF8;
-  border-radius: 10px;
-  padding: 14px 16px;
-  margin-top: 6px;
-  border: 1px dashed var(--border);
-}
-.stretch-block h4 {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-}
-.stretch-block li {
-  font-size: 13px;
-  color: var(--text-secondary);
-  padding: 3px 0;
-  list-style: none;
-  padding-left: 16px;
-  position: relative;
-}
-.stretch-block li::before {
-  content: '•';
-  position: absolute;
-  left: 2px;
-  color: var(--accent-b);
-}
-
-.footer {
-  text-align: center;
-  padding: 30px 20px 20px;
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-</style>
+  <style>
+    body, html { margin: 0; padding: 0; background: #0A0A0B; }
+  </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>Scheda Allenamento</h1>
-  <div class="subtitle">Aprile → Giugno 2026 · 3×/settimana · 60 min</div>
-</div>
-
-<div class="objectives">
-  <span class="obj-pill postura">🎯 Postura</span>
-  <span class="obj-pill cardio">❤️ Cardio</span>
-  <span class="obj-pill cammino">🥾 Prep. Cammino Santiago</span>
-</div>
-
-<!-- ============ GIORNO A ============ -->
-<div class="section-title">I tuoi 3 giorni</div>
-
-<div class="day-card day-a open" id="day-a">
-  <div class="day-header" onclick="toggleDay('day-a')">
-    <div class="day-badge">A</div>
-    <div class="day-info">
-      <h2>Upper Body & Postura</h2>
-      <p>Catena posteriore · Spalle · Cardio rowing</p>
-    </div>
-    <svg class="day-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-  <div class="day-content">
-
-    <div class="phase-label">Riscaldamento — 5 min</div>
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="8" r="4"/>
-            <line x1="24" y1="12" x2="24" y2="28"/>
-            <line x1="16" y1="20" x2="32" y2="20"/>
-            <line x1="24" y1="28" x2="18" y2="38"/>
-            <line x1="24" y1="28" x2="30" y2="38"/>
-            <!-- circular arrows around -->
-            <path d="M10 12 A16 16 0 0 1 38 12" stroke-dasharray="3 3" opacity="0.4"/>
-            <path d="M14 36 A16 16 0 0 0 34 36" stroke-dasharray="3 3" opacity="0.4"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Mobilità spalle & Wall Slides</div>
-          <div class="exercise-meta">3 min ellittica + 2×8 wall slides</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          <strong>Wall slides:</strong> schiena e testa aderenti al muro, braccia a "candelabro" (gomiti a 90°). Scorri le braccia in alto mantenendo il contatto col muro. Se non riesci a toccare il muro con i polsi, è proprio lì che devi lavorare.
-        </div>
-      </details>
-    </div>
-
-    <div class="phase-label">Blocco principale — 40 min</div>
-
-    <!-- Rowing -->
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round">
-            <circle cx="30" cy="14" r="4"/>
-            <path d="M28 18 L22 28 L14 30"/>
-            <line x1="22" y1="28" x2="18" y2="38"/>
-            <line x1="22" y1="28" x2="28" y2="36"/>
-            <line x1="28" y1="22" x2="36" y2="18"/>
-            <line x1="22" y1="22" x2="14" y2="18"/>
-            <!-- seat/rail -->
-            <line x1="8" y1="40" x2="40" y2="40" stroke-dasharray="2 2" opacity="0.3"/>
-            <rect x="18" y="36" width="8" height="3" rx="1" opacity="0.3"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Vogatore (Rowing Machine) <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">10 min continui</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Ritmo moderato costante. La chiave: <strong>tira con le scapole</strong>, non solo con le braccia. Petto fuori, sguardo avanti. Nella fase di trazione stringi le scapole come se dovessi tenere una matita tra loro. Resistenza media.
-          <br><span class="alt-label">⟳ Alternativa se occupato: ellittica 10 min</span>
-        </div>
-      </details>
-    </div>
-
-    <!-- Rematore manubrio -->
-    <div class="exercise postura-highlight">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round">
-            <circle cx="16" cy="12" r="4"/>
-            <!-- torso inclinato -->
-            <line x1="16" y1="16" x2="24" y2="30"/>
-            <!-- gambe -->
-            <line x1="24" y1="30" x2="20" y2="42"/>
-            <line x1="24" y1="30" x2="30" y2="42"/>
-            <!-- braccio che tira su -->
-            <line x1="20" y1="22" x2="20" y2="32"/>
-            <!-- manubrio -->
-            <rect x="17" y="32" width="6" height="3" rx="1" fill="#2563EB"/>
-            <!-- braccio appoggiato -->
-            <line x1="18" y1="18" x2="10" y2="24"/>
-            <!-- panca -->
-            <rect x="6" y="24" width="8" height="2" rx="1" opacity="0.3"/>
-            <!-- freccia su -->
-            <path d="M32 34 L32 24 L29 27" stroke="#059669" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Rematore con manubrio <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">3 × 10 per lato · rec. 60s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Un ginocchio e una mano sulla panca, l'altro piede a terra. Tira il manubrio verso il fianco, <strong>non verso la spalla</strong>. In alto, stringi la scapola per 1 secondo pieno prima di scendere. Busto fermo, niente rotazioni. È l'esercizio più importante della scheda per la postura.
-        </div>
-      </details>
-    </div>
-
-    <!-- Face pull -->
-    <div class="exercise postura-highlight">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="10" r="4"/>
-            <line x1="24" y1="14" x2="24" y2="30"/>
-            <line x1="24" y1="30" x2="20" y2="42"/>
-            <line x1="24" y1="30" x2="28" y2="42"/>
-            <!-- braccia aperte, gomiti alti -->
-            <line x1="24" y1="18" x2="14" y2="14"/>
-            <line x1="14" y1="14" x2="12" y2="20"/>
-            <line x1="24" y1="18" x2="34" y2="14"/>
-            <line x1="34" y1="14" x2="36" y2="20"/>
-            <!-- cavo -->
-            <line x1="12" y1="20" x2="36" y2="20" stroke-dasharray="2 3" opacity="0.3"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Face Pull al cavo <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">3 × 15 · rec. 45s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Cavo all'altezza del viso, corda o doppia maniglia. Tira verso la fronte aprendo le braccia a "doppio bicipite". <strong>Gomiti più alti dei polsi</strong>. Concentrati sui deltoidi posteriori e sui trapezi medi, non sulle braccia. Peso leggero, tantissimo controllo.
-          <br><span class="alt-label">⟳ Alternativa: reverse fly con manubri leggeri su panca inclinata a 30°</span>
-        </div>
-      </details>
-    </div>
-
-    <!-- Chest press -->
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round">
-            <!-- panca vista laterale -->
-            <rect x="8" y="24" width="32" height="3" rx="1" opacity="0.3"/>
-            <!-- corpo sdraiato -->
-            <circle cx="12" cy="20" r="3.5"/>
-            <line x1="15" y1="22" x2="32" y2="22"/>
-            <!-- braccia che spingono su -->
-            <line x1="20" y1="22" x2="20" y2="12"/>
-            <line x1="30" y1="22" x2="30" y2="12"/>
-            <!-- manubri -->
-            <rect x="16" y="10" width="8" height="3" rx="1" fill="#2563EB"/>
-            <rect x="26" y="10" width="8" height="3" rx="1" fill="#2563EB"/>
-            <!-- frecce su -->
-            <path d="M20 18 L20 14" stroke="#059669" stroke-width="1.5"/>
-            <path d="M30 18 L30 14" stroke="#059669" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Chest Press con manubri</div>
-          <div class="exercise-meta">3 × 10-12 · rec. 60s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Serve per l'equilibrio muscolare (non solo tirare). Sulla panca, <strong>scapole addotte e depresse</strong> (strette e basse): questo attiva il giusto assetto posturale anche mentre spingi. Scendi controllato, spingi deciso. Se la panca è occupata: push-up a terra.
-        </div>
-      </details>
-    </div>
-
-    <!-- Farmer's Walk -->
-    <div class="exercise postura-highlight">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="8" r="4"/>
-            <line x1="24" y1="12" x2="24" y2="28"/>
-            <!-- gambe in cammino -->
-            <line x1="24" y1="28" x2="18" y2="40"/>
-            <line x1="24" y1="28" x2="30" y2="40"/>
-            <!-- braccia giù con manubri -->
-            <line x1="24" y1="16" x2="14" y2="30"/>
-            <line x1="24" y1="16" x2="34" y2="30"/>
-            <!-- manubri -->
-            <rect x="11" y="30" width="6" height="3" rx="1" fill="#2563EB"/>
-            <rect x="31" y="30" width="6" height="3" rx="1" fill="#2563EB"/>
-            <!-- postura dritta enfatizzata -->
-            <path d="M24 6 L24 2" stroke="#059669" stroke-width="1.5" stroke-dasharray="2 1"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Farmer's Walk <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">3 × 30-40 passi · rec. 60s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Prendi due manubri pesanti, cammina. Sembra semplice ma è potentissimo. <strong>Spalle indietro e basse, petto fuori, sguardo dritto avanti, core attivo.</strong> Niente oscillazioni del busto. Allena postura sotto carico, core, grip e circolazione periferica (mani e avambracci lavorano tantissimo). Scegli un corridoio libero della palestra.
-        </div>
-      </details>
-    </div>
-
-    <!-- Pull-apart elastico -->
-    <div class="exercise postura-highlight">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="10" r="4"/>
-            <line x1="24" y1="14" x2="24" y2="30"/>
-            <line x1="24" y1="30" x2="20" y2="42"/>
-            <line x1="24" y1="30" x2="28" y2="42"/>
-            <!-- braccia aperte con elastico -->
-            <line x1="24" y1="20" x2="10" y2="20"/>
-            <line x1="24" y1="20" x2="38" y2="20"/>
-            <!-- elastico -->
-            <path d="M10 20 Q24 24 38 20" stroke="#D97706" stroke-width="1.5" stroke-dasharray="3 2"/>
-            <!-- frecce -->
-            <path d="M14 20 L10 20" stroke="#059669" stroke-width="1.5"/>
-            <path d="M34 20 L38 20" stroke="#059669" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Pull-Apart con elastico <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">2 × 20 · rec. 30s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Braccia tese davanti a te, impugnatura larghezza spalle. Apri le braccia tirando l'elastico verso il petto, <strong>stringendo le scapole in fondo</strong>. Torna lento. Usa un elastico leggero — l'obiettivo è il volume, non la forza. Portane uno nello zaino (costa 5€), lo puoi usare sempre anche se il cavo è occupato.
-        </div>
-      </details>
-    </div>
-
-    <div class="stretch-block">
-      <h4>🧘 Chiusura posturale — 5 min</h4>
-      <ul>
-        <li><strong>Stretching pettorale:</strong> braccio contro stipite porta, 30s per lato × 2</li>
-        <li><strong>Chin tuck:</strong> 2 × 10 rep con tenuta 5s — rinforza i flessori del collo, combatte il "collo in avanti"</li>
-        <li><strong>Stretching trapezio superiore:</strong> orecchio verso spalla, 30s per lato</li>
-      </ul>
-    </div>
-
-  </div>
-</div>
-
-<!-- ============ GIORNO B ============ -->
-<div class="day-card day-b" id="day-b">
-  <div class="day-header" onclick="toggleDay('day-b')">
-    <div class="day-badge">B</div>
-    <div class="day-info">
-      <h2>Lower Body & Cammino</h2>
-      <p>Gambe · Polpacci · Core · Stabilità</p>
-    </div>
-    <svg class="day-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-  <div class="day-content">
-
-    <div class="phase-label">Riscaldamento — 5 min</div>
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="8" r="4"/>
-            <line x1="24" y1="12" x2="24" y2="26"/>
-            <!-- gamba swing avanti -->
-            <line x1="24" y1="26" x2="30" y2="38"/>
-            <!-- gamba ferma -->
-            <line x1="24" y1="26" x2="20" y2="42"/>
-            <line x1="16" y1="18" x2="32" y2="18"/>
-            <!-- arco di swing -->
-            <path d="M16 40 Q24 32 32 40" stroke-dasharray="3 2" opacity="0.4"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Ellittica + mobilità anche</div>
-          <div class="exercise-meta">3 min ellittica + swing gambe + 2×10 glute bridge</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="phase-label">Blocco principale — 40 min</div>
-
-    <!-- Ellittica endurance -->
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="8" r="4"/>
-            <line x1="24" y1="12" x2="24" y2="26"/>
-            <line x1="24" y1="26" x2="18" y2="38"/>
-            <line x1="24" y1="26" x2="30" y2="38"/>
-            <line x1="24" y1="18" x2="16" y2="24"/>
-            <line x1="24" y1="18" x2="32" y2="24"/>
-            <!-- curve salita -->
-            <path d="M6 42 Q14 38 22 36 Q30 34 38 30 Q42 28 44 24" stroke="#D97706" stroke-width="1.5" stroke-dasharray="3 2"/>
-            <text x="40" y="22" font-size="8" fill="#D97706" font-family="sans-serif">↗</text>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Ellittica — resistenza progressiva</div>
-          <div class="exercise-meta">12-15 min (→ 20-25 min a sett. 9-12)</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Ogni 3 minuti <strong>aumenta leggermente la resistenza</strong>. Simula i dislivelli del Cammino. Mantieni un ritmo in cui "puoi parlare ma con fatica". Nelle ultime settimane, allunga progressivamente fino a 20-25 minuti.
-        </div>
-      </details>
-    </div>
-
-    <!-- Goblet squat -->
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="8" r="4"/>
-            <!-- busto eretto -->
-            <line x1="24" y1="12" x2="24" y2="24"/>
-            <!-- gambe piegate (squat) -->
-            <line x1="24" y1="24" x2="16" y2="32"/>
-            <line x1="16" y1="32" x2="16" y2="42"/>
-            <line x1="24" y1="24" x2="32" y2="32"/>
-            <line x1="32" y1="32" x2="32" y2="42"/>
-            <!-- manubrio al petto -->
-            <rect x="20" y="14" width="8" height="5" rx="2" fill="#059669" opacity="0.5"/>
-            <line x1="24" y1="16" x2="18" y2="20"/>
-            <line x1="24" y1="16" x2="30" y2="20"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Goblet Squat</div>
-          <div class="exercise-meta">3 × 12 · rec. 60s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Manubrio tenuto al petto con entrambe le mani. Piedi larghezza spalle, punte leggermente aperte. <strong>Scendi lento (3 secondi), sali deciso.</strong> Il goblet squat ti obbliga a stare dritto con il busto — è anche un esercizio posturale. Ginocchia in linea con le punte dei piedi.
-        </div>
-      </details>
-    </div>
-
-    <!-- Affondi -->
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round">
-            <circle cx="22" cy="8" r="4"/>
-            <line x1="22" y1="12" x2="22" y2="26"/>
-            <!-- gamba avanti piegata -->
-            <line x1="22" y1="26" x2="14" y2="34"/>
-            <line x1="14" y1="34" x2="14" y2="44"/>
-            <!-- gamba dietro -->
-            <line x1="22" y1="26" x2="32" y2="36"/>
-            <line x1="32" y1="36" x2="34" y2="44"/>
-            <!-- braccia con manubri -->
-            <line x1="22" y1="16" x2="16" y2="30"/>
-            <line x1="22" y1="16" x2="28" y2="30"/>
-            <rect x="13" y="30" width="6" height="2.5" rx="1" fill="#059669"/>
-            <rect x="25" y="30" width="6" height="2.5" rx="1" fill="#059669"/>
-            <!-- freccia avanti -->
-            <path d="M36 20 L42 20 L40 18" stroke="#D97706" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Affondi camminati con manubri</div>
-          <div class="exercise-meta">3 × 10 per gamba · rec. 60s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Passo lungo, ginocchio posteriore sfiora il pavimento. <strong>Busto verticale, non piegarti avanti.</strong> Spingi col tallone della gamba davanti per rialzarti. Simula la camminata in salita. Se non c'è spazio per camminare, falli sul posto alternando.
-        </div>
-      </details>
-    </div>
-
-    <!-- Romanian Deadlift -->
-    <div class="exercise postura-highlight">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round">
-            <circle cx="14" cy="12" r="4"/>
-            <!-- busto inclinato avanti -->
-            <line x1="14" y1="16" x2="30" y2="24"/>
-            <!-- gambe quasi dritte -->
-            <line x1="30" y1="24" x2="30" y2="42"/>
-            <line x1="30" y1="24" x2="36" y2="42"/>
-            <!-- braccia giù con manubri -->
-            <line x1="20" y1="20" x2="20" y2="34"/>
-            <rect x="17" y="34" width="6" height="2.5" rx="1" fill="#059669"/>
-            <!-- linea schiena dritta -->
-            <line x1="12" y1="10" x2="32" y2="22" stroke="#D97706" stroke-width="1" stroke-dasharray="3 2"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Romanian Deadlift manubri <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">3 × 10 · rec. 60s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          In piedi, manubri davanti alle cosce. <strong>Schiena neutra SEMPRE</strong> — questa è la regola d'oro. Scendi piegando le anche (non la schiena), manubri scorrono lungo le gambe. Senti tirare i femorali. Risali stringendo i glutei. Rafforza tutta la catena posteriore e insegna al corpo a piegarsi dal bacino, non dalla schiena.
-        </div>
-      </details>
-    </div>
-
-    <!-- Step-up -->
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round">
-            <!-- panca/step -->
-            <rect x="6" y="30" width="22" height="12" rx="2" opacity="0.2" fill="#059669" stroke="none"/>
-            <rect x="6" y="30" width="22" height="12" rx="2"/>
-            <circle cx="28" cy="8" r="4"/>
-            <line x1="28" y1="12" x2="28" y2="24"/>
-            <!-- gamba su step -->
-            <line x1="28" y1="24" x2="20" y2="28"/>
-            <!-- gamba giù -->
-            <line x1="28" y1="24" x2="34" y2="38"/>
-            <!-- braccia con manubri -->
-            <line x1="28" y1="16" x2="22" y2="26"/>
-            <line x1="28" y1="16" x2="36" y2="26"/>
-            <rect x="19" y="26" width="6" height="2.5" rx="1" fill="#059669"/>
-            <rect x="33" y="26" width="6" height="2.5" rx="1" fill="#059669"/>
-            <!-- freccia su -->
-            <path d="M40 22 L40 12 L38 15" stroke="#D97706" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Step-up su panca con manubri</div>
-          <div class="exercise-meta">3 × 8 per gamba · rec. 60s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Panca ad altezza normale. Piede intero sulla panca, <strong>spingi col tallone</strong>. Non "rimbalzare" con il piede a terra per aiutarti. Scendi controllato. Simula la salita con zaino — diretto per il Cammino.
-        </div>
-      </details>
-    </div>
-
-    <!-- Calf raise -->
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round">
-            <!-- step -->
-            <rect x="14" y="36" width="20" height="6" rx="1" opacity="0.2" fill="#059669" stroke="none"/>
-            <rect x="14" y="36" width="20" height="6" rx="1"/>
-            <circle cx="24" cy="8" r="4"/>
-            <line x1="24" y1="12" x2="24" y2="28"/>
-            <!-- gambe -->
-            <line x1="24" y1="28" x2="20" y2="36"/>
-            <line x1="24" y1="28" x2="28" y2="36"/>
-            <!-- piedi sulla punta -->
-            <circle cx="20" cy="35" r="1.5" fill="#059669"/>
-            <circle cx="28" cy="35" r="1.5" fill="#059669"/>
-            <!-- braccia lungo i fianchi -->
-            <line x1="24" y1="16" x2="18" y2="26"/>
-            <line x1="24" y1="16" x2="30" y2="26"/>
-            <!-- freccia su -->
-            <path d="M36 28 L36 18 L34 21" stroke="#D97706" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Calf Raise su step</div>
-          <div class="exercise-meta">3 × 20 · rec. 45s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Metatarsi sullo step, talloni fuori nel vuoto. <strong>Scendi giù per lo stretch completo, sali fino in punta di piedi</strong>. Lento, controllato. Aggiungi un manubrio quando diventa facile. I polpacci ti salveranno sul Cammino: sono il muscolo n.1 per camminare in discesa.
-        </div>
-      </details>
-    </div>
-
-    <div class="phase-label">Core + postura — 10 min</div>
-
-    <div class="exercise postura-highlight">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round">
-            <!-- corpo a terra -->
-            <circle cx="24" cy="30" r="3"/>
-            <line x1="24" y1="30" x2="24" y2="18"/>
-            <!-- braccia -->
-            <line x1="24" y1="22" x2="14" y2="12"/>
-            <!-- gamba opposta -->
-            <line x1="24" y1="18" x2="34" y2="10"/>
-            <!-- gamba a terra -->
-            <line x1="24" y1="18" x2="18" y2="14"/>
-            <!-- braccio a terra -->
-            <line x1="24" y1="22" x2="32" y2="18"/>
-            <!-- pavimento -->
-            <line x1="6" y1="34" x2="42" y2="34" opacity="0.3"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Dead Bug + Bird-Dog <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">3 × 8 per lato ciascuno</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          <strong>Dead bug:</strong> schiena a terra, braccia e ginocchia al cielo. Allunga braccio e gamba opposti mantenendo la schiena incollata al pavimento — se si stacca, il range è troppo ampio.<br><br>
-          <strong>Bird-dog:</strong> a quattro zampe, allunga braccio e gamba opposti. Tieni il busto fermo come un tavolo. Entrambi allenano il core profondo e la stabilità — fondamentali per proteggere la schiena sotto zaino.
-        </div>
-      </details>
-    </div>
-
-    <div class="stretch-block">
-      <h4>🧘 Stretching finale — 5 min</h4>
-      <ul>
-        <li><strong>Flessori dell'anca:</strong> affondo basso, spingi il bacino avanti, 30s × 2 per lato (i flessori accorciati peggiorano la postura!)</li>
-        <li><strong>Quadricipiti:</strong> in piedi, tallone al gluteo, 30s per lato</li>
-        <li><strong>Polpacci:</strong> piede contro il muro, 30s per lato</li>
-      </ul>
-    </div>
-
-  </div>
-</div>
-
-<!-- ============ GIORNO C ============ -->
-<div class="day-card day-c" id="day-c">
-  <div class="day-header" onclick="toggleDay('day-c')">
-    <div class="day-badge">C</div>
-    <div class="day-info">
-      <h2>Circuito Full Body + Endurance</h2>
-      <p>Cardio sostenuto · Frequenza cardiaca · Endurance</p>
-    </div>
-    <svg class="day-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-  <div class="day-content">
-
-    <div class="phase-label">Riscaldamento — 5 min</div>
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="8" r="4"/>
-            <line x1="24" y1="12" x2="24" y2="26"/>
-            <line x1="24" y1="26" x2="18" y2="38"/>
-            <line x1="24" y1="26" x2="30" y2="38"/>
-            <line x1="24" y1="18" x2="16" y2="22"/>
-            <line x1="24" y1="18" x2="32" y2="22"/>
-            <path d="M10 24 A16 16 0 0 1 38 24" stroke-dasharray="3 3" opacity="0.3"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Ellittica + mobilità generale</div>
-          <div class="exercise-meta">3 min + rotazioni busto, anche, caviglie</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="phase-label">Circuito — 25 min · 4 giri</div>
-
-    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px; padding:0 2px;">
-      <strong>40s lavoro / 20s transizione.</strong> Tra un giro e l'altro: 60s di recupero (cammina). L'obiettivo è tenere alta la frequenza cardiaca per tutto il blocco.
-    </p>
-
-    <div class="circuit-grid">
-      <div class="circuit-item">
-        <div class="circuit-num">1</div>
-        <div class="ex-name">Kettlebell Swing</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#D97706" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="20" cy="6" r="3"/>
-          <line x1="20" y1="9" x2="20" y2="22"/>
-          <line x1="20" y1="22" x2="14" y2="34"/>
-          <line x1="20" y1="22" x2="26" y2="34"/>
-          <line x1="20" y1="14" x2="12" y2="8"/>
-          <line x1="20" y1="14" x2="28" y2="8"/>
-          <circle cx="20" cy="6" r="1" fill="#D97706" opacity="0"/>
-          <ellipse cx="20" cy="5" rx="4" ry="3" stroke-dasharray="2 2" opacity="0.4"/>
-        </svg>
-      </div>
-      <div class="circuit-item">
-        <div class="circuit-num">2</div>
-        <div class="ex-name">Push-up</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#D97706" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="8" cy="14" r="3"/>
-          <line x1="11" y1="16" x2="30" y2="18"/>
-          <line x1="14" y1="16" x2="14" y2="26"/>
-          <line x1="26" y1="18" x2="26" y2="28"/>
-          <line x1="30" y1="18" x2="34" y2="28"/>
-          <line x1="34" y1="28" x2="36" y2="28"/>
-        </svg>
-      </div>
-      <div class="circuit-item">
-        <div class="circuit-num">3</div>
-        <div class="ex-name">Goblet Squat</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#D97706" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="20" cy="6" r="3"/>
-          <line x1="20" y1="9" x2="20" y2="20"/>
-          <line x1="20" y1="20" x2="14" y2="28"/>
-          <line x1="14" y1="28" x2="14" y2="36"/>
-          <line x1="20" y1="20" x2="26" y2="28"/>
-          <line x1="26" y1="28" x2="26" y2="36"/>
-          <rect x="17" y="11" width="6" height="4" rx="1.5" opacity="0.4" fill="#D97706"/>
-        </svg>
-      </div>
-      <div class="circuit-item">
-        <div class="circuit-num">4</div>
-        <div class="ex-name">Rematore manubri (doppio)</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#D97706" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="12" cy="10" r="3"/>
-          <line x1="14" y1="12" x2="26" y2="22"/>
-          <line x1="26" y1="22" x2="24" y2="36"/>
-          <line x1="26" y1="22" x2="30" y2="36"/>
-          <line x1="18" y1="16" x2="16" y2="26"/>
-          <rect x="13" y="26" width="6" height="2" rx="1" fill="#D97706"/>
-        </svg>
-      </div>
-      <div class="circuit-item">
-        <div class="circuit-num">5</div>
-        <div class="ex-name">Affondi alternati</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#D97706" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="18" cy="6" r="3"/>
-          <line x1="18" y1="9" x2="18" y2="22"/>
-          <line x1="18" y1="22" x2="12" y2="30"/>
-          <line x1="12" y1="30" x2="12" y2="38"/>
-          <line x1="18" y1="22" x2="26" y2="32"/>
-          <line x1="26" y1="32" x2="28" y2="38"/>
-        </svg>
-      </div>
-      <div class="circuit-item">
-        <div class="circuit-num">6</div>
-        <div class="ex-name">Plank</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#D97706" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="8" cy="18" r="3"/>
-          <line x1="11" y1="20" x2="32" y2="20"/>
-          <line x1="14" y1="20" x2="14" y2="30"/>
-          <line x1="32" y1="20" x2="32" y2="30"/>
-        </svg>
-      </div>
-    </div>
-
-    <details class="exercise-detail" style="background:var(--bg);border-radius:10px;padding:12px 14px;border:1px solid var(--border);">
-      <summary>Note tecniche circuito</summary>
-      <div class="detail-text">
-        <strong>Kettlebell swing:</strong> il re del cardio con pesi. La forza viene da anche e glutei, NON dalle braccia. Se non c'è il kettlebell, usa un manubrio impugnato verticalmente.<br><br>
-        <strong>Plank:</strong> non "sopravvivere" — attiva consciamente glutei e addome, come se qualcuno ti dovesse dare un pugno nello stomaco. Se 40s è facile, prova la variante con tocco spalla alternato.
-      </div>
-    </details>
-
-    <div class="phase-label">Endurance finale — 15 min</div>
-
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="8" r="4"/>
-            <line x1="24" y1="12" x2="24" y2="26"/>
-            <line x1="24" y1="26" x2="18" y2="38"/>
-            <line x1="24" y1="26" x2="30" y2="38"/>
-            <line x1="24" y1="18" x2="16" y2="24"/>
-            <line x1="24" y1="18" x2="32" y2="24"/>
-            <!-- cuore -->
-            <path d="M35 10 C35 7 40 7 40 10 C40 14 35 17 35 17 C35 17 30 14 30 10 C30 7 35 7 35 10Z" fill="#EF4444" stroke="#EF4444" stroke-width="1" opacity="0.6"/>
-            <text x="33" y="32" font-size="7" fill="#D97706" font-family="DM Mono, monospace">130-150</text>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Ellittica — ritmo costante</div>
-          <div class="exercise-meta">15 min · FC 130-150 bpm · +2 min ogni 2 sett.</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Ritmo moderato costante — la zona in cui "puoi parlare ma con fatica". Se hai un orologio con cardiofrequenzimetro, punta a 130-150 bpm. <strong>Ogni 2 settimane aggiungi 2 minuti</strong>. L'obiettivo è costruire la base aerobica per il Cammino e migliorare il profilo lipidico (colesterolo HDL ↑).
-        </div>
-      </details>
-    </div>
-
-    <div class="stretch-block">
-      <h4>🧘 Chiusura completa — 5 min</h4>
-      <ul>
-        <li><strong>Stretching pettorale + flessori anca + quadricipiti + polpacci</strong></li>
-        <li><strong>Chin tuck:</strong> 10 rep con tenuta 5s</li>
-        <li>Respirazione profonda: 5 respiri lenti (4s inspira, 6s espira)</li>
-      </ul>
-    </div>
-
-  </div>
-</div>
-
-<!-- ============ PROGRESSIONE ============ -->
-<div class="section-title">Progressione 12 settimane</div>
-
-<div class="tip-card">
-  <table class="prog-table">
-    <thead>
-      <tr><th>Periodo</th><th>Focus</th><th>Cosa cambia</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Sett. 1-4</td>
-        <td><strong>Base</strong></td>
-        <td>Pesi moderati, impara i movimenti. Ellittica 12 min. Circuito 3 giri.</td>
-      </tr>
-      <tr>
-        <td>Sett. 5-8</td>
-        <td><strong>Volume</strong></td>
-        <td>+1 serie dove indicato. Pesi ↑. Ellittica 18-20 min. Circuito 4 giri.</td>
-      </tr>
-      <tr>
-        <td>Sett. 9-12</td>
-        <td><strong>Endurance</strong></td>
-        <td>Circuito 5 giri. Ellittica 20-25 min. Tapis roulant inclinato 10-12% se libero.</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- ============ CONSIGLI ============ -->
-<!-- ============ ROUTINE CASA ============ -->
-<div class="section-title">Routine alternativa</div>
-
-<div class="day-card day-h" id="day-h">
-  <div class="day-header" onclick="toggleDay('day-h')">
-    <div class="day-badge" style="background:#7C3AED;">🏠</div>
-    <div class="day-info">
-      <h2>Sessione Casa — 60 min</h2>
-      <p>Quando non riesci ad andare in palestra</p>
-    </div>
-    <svg class="day-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-  <div class="day-content">
-
-    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:6px; padding:0 2px;">
-      <strong>Cosa ti serve:</strong> 2 manubri + uno zaino con libri o bottiglie per aggiungere carico. Nient'altro.
-    </p>
-
-    <div class="phase-label">Mobilità & attivazione — 8 min</div>
-
-    <div class="exercise postura-highlight">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="10" r="4"/>
-            <line x1="24" y1="14" x2="24" y2="28"/>
-            <line x1="24" y1="28" x2="20" y2="42"/>
-            <line x1="24" y1="28" x2="28" y2="42"/>
-            <line x1="24" y1="20" x2="14" y2="14"/>
-            <line x1="24" y1="20" x2="34" y2="14"/>
-            <path d="M14 14 Q24 8 34 14" stroke-dasharray="2 2" opacity="0.4"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Sequenza mobilità posturale <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">~8 min, senza pausa</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Sequenza completa</summary>
-        <div class="detail-text">
-          Fai tutto di fila, fluido:<br><br>
-          <strong>1. Cat-cow:</strong> a quattro zampe, 10 rep. Inarca e arrotonda la schiena lentamente. Sveglia tutta la colonna.<br><br>
-          <strong>2. World's greatest stretch:</strong> 5 per lato. Affondo avanti, una mano a terra, l'altra ruota verso il soffitto. Apre anche, petto e dorsale in un colpo solo.<br><br>
-          <strong>3. Wall slides:</strong> 2 × 8. Schiena al muro, braccia a candelabro, scorri in alto.<br><br>
-          <strong>4. Chin tuck:</strong> 10 rep, tenuta 5s.<br><br>
-          <strong>5. Glute bridge:</strong> 2 × 12. Stringi in alto 2 secondi.
-        </div>
-      </details>
-    </div>
-
-    <div class="phase-label">Blocco 1: Forza posturale — 15 min</div>
-
-    <div class="exercise postura-highlight">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round">
-            <circle cx="16" cy="12" r="4"/>
-            <line x1="16" y1="16" x2="24" y2="28"/>
-            <line x1="24" y1="28" x2="20" y2="42"/>
-            <line x1="24" y1="28" x2="30" y2="42"/>
-            <line x1="18" y1="20" x2="10" y2="14"/>
-            <line x1="22" y1="24" x2="34" y2="16"/>
-            <rect x="7" y="12" width="6" height="3" rx="1" fill="#7C3AED"/>
-            <rect x="31" y="14" width="6" height="3" rx="1" fill="#7C3AED"/>
-            <path d="M10 18 L8 14" stroke="#059669" stroke-width="1.5"/>
-            <path d="M34 20 L36 16" stroke="#059669" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Reverse Fly con manubri <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">3 × 15 · rec. 30s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          In piedi, busto inclinato a 45° (o seduto su una sedia piegato avanti). Manubri leggeri, braccia che pendono. <strong>Apri le braccia lateralmente, gomiti leggermente piegati, stringi le scapole in alto per 2 secondi.</strong> Lento e controllato. Peso leggero — l'obiettivo è sentire i deltoidi posteriori e i romboidi, non le braccia.
-        </div>
-      </details>
-    </div>
-
-    <div class="exercise postura-highlight">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round">
-            <!-- corpo a pancia in giù -->
-            <circle cx="34" cy="26" r="3"/>
-            <line x1="31" y1="26" x2="12" y2="26"/>
-            <!-- braccia a Y -->
-            <line x1="12" y1="26" x2="6" y2="16"/>
-            <line x1="12" y1="26" x2="18" y2="16"/>
-            <!-- manubri -->
-            <rect x="3" y="14" width="6" height="3" rx="1" fill="#7C3AED"/>
-            <rect x="15" y="14" width="6" height="3" rx="1" fill="#7C3AED"/>
-            <!-- pavimento -->
-            <line x1="4" y1="30" x2="44" y2="30" opacity="0.3"/>
-            <!-- frecce su -->
-            <path d="M6 20 L6 16" stroke="#059669" stroke-width="1.5"/>
-            <path d="M18 20 L18 16" stroke="#059669" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Prone Y-T-W con manubri <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">2 × 8 per posizione · rec. 30s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          A pancia in giù sul pavimento, manubri leggeri in mano, fronte appoggiata.<br><br>
-          <strong>Y:</strong> solleva le braccia in alto a V. Attiva trapezio basso — il muscolo chiave anti-gobba.<br><br>
-          <strong>T:</strong> braccia perpendicolari al corpo, solleva lateralmente. Attiva trapezio medio e romboidi.<br><br>
-          <strong>W:</strong> gomiti piegati a 90°, solleva portando le mani all'altezza delle orecchie. Attiva deltoidi posteriori e rotatori. <strong>Tenuta 2s in alto per tutte le varianti.</strong> Usa manubri molto leggeri o anche solo a corpo libero.
-        </div>
-      </details>
-    </div>
-
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round">
-            <circle cx="10" cy="16" r="4"/>
-            <line x1="13" y1="18" x2="34" y2="22"/>
-            <line x1="18" y1="20" x2="16" y2="32"/>
-            <line x1="28" y1="22" x2="26" y2="34"/>
-            <line x1="34" y1="22" x2="38" y2="34"/>
-            <line x1="38" y1="34" x2="40" y2="34"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Push-up (3 varianti a rotazione)</div>
-          <div class="exercise-meta">3 × 10-15 · rec. 45s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Alterna le settimane: <strong>standard → larghi → diamante.</strong> Scapole addotte durante tutto il movimento. Scendi lento (3s), spingi deciso. Se ne fai più di 15 facilmente, metti lo zaino con libri per aggiungere carico.
-        </div>
-      </details>
-    </div>
-
-    <div class="exercise postura-highlight">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="32" r="3"/>
-            <line x1="24" y1="32" x2="24" y2="18"/>
-            <line x1="24" y1="22" x2="14" y2="12"/>
-            <line x1="24" y1="18" x2="34" y2="10"/>
-            <line x1="24" y1="22" x2="32" y2="18"/>
-            <line x1="24" y1="18" x2="18" y2="14"/>
-            <line x1="6" y1="36" x2="42" y2="36" opacity="0.3"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Dead Bug + Superman <span class="postura-tag">POSTURA</span></div>
-          <div class="exercise-meta">3 × 10 per lato ciascuno · rec. 30s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          <strong>Dead bug:</strong> schiena a terra, braccio e gamba opposti si allungano. Schiena INCOLLATA al pavimento.<br><br>
-          <strong>Superman:</strong> a pancia in giù, solleva braccia e gambe insieme. Tenuta 3s in alto. Rinforza erettori spinali, glutei, trapezi. Super per la postura.
-        </div>
-      </details>
-    </div>
-
-    <div class="phase-label">Blocco 2: Cardio a circuito — 20 min</div>
-
-    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px; padding:0 2px;">
-      <strong>45s lavoro / 15s transizione · 4 giri.</strong> Tra un giro e l'altro: 45s di recupero. Tieni alta la frequenza cardiaca!
-    </p>
-
-    <div class="circuit-grid">
-      <div class="circuit-item">
-        <div class="circuit-num" style="background:#7C3AED;">1</div>
-        <div class="ex-name">Jumping Jack</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="20" cy="6" r="3"/>
-          <line x1="20" y1="9" x2="20" y2="22"/>
-          <line x1="20" y1="14" x2="12" y2="8"/>
-          <line x1="20" y1="14" x2="28" y2="8"/>
-          <line x1="20" y1="22" x2="12" y2="34"/>
-          <line x1="20" y1="22" x2="28" y2="34"/>
-        </svg>
-      </div>
-      <div class="circuit-item">
-        <div class="circuit-num" style="background:#7C3AED;">2</div>
-        <div class="ex-name">Thruster con manubri</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="20" cy="6" r="3"/>
-          <line x1="20" y1="9" x2="20" y2="20"/>
-          <line x1="20" y1="20" x2="14" y2="28"/>
-          <line x1="14" y1="28" x2="14" y2="36"/>
-          <line x1="20" y1="20" x2="26" y2="28"/>
-          <line x1="26" y1="28" x2="26" y2="36"/>
-          <line x1="20" y1="12" x2="14" y2="4"/>
-          <line x1="20" y1="12" x2="26" y2="4"/>
-        </svg>
-      </div>
-      <div class="circuit-item">
-        <div class="circuit-num" style="background:#7C3AED;">3</div>
-        <div class="ex-name">Mountain climber</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="10" cy="14" r="3"/>
-          <line x1="13" y1="16" x2="32" y2="20"/>
-          <line x1="32" y1="20" x2="32" y2="30"/>
-          <line x1="20" y1="18" x2="16" y2="24"/>
-          <line x1="16" y1="24" x2="20" y2="28"/>
-        </svg>
-      </div>
-      <div class="circuit-item">
-        <div class="circuit-num" style="background:#7C3AED;">4</div>
-        <div class="ex-name">Reverse lunge alternato</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="18" cy="6" r="3"/>
-          <line x1="18" y1="9" x2="18" y2="22"/>
-          <line x1="18" y1="22" x2="12" y2="30"/>
-          <line x1="12" y1="30" x2="12" y2="38"/>
-          <line x1="18" y1="22" x2="26" y2="32"/>
-          <line x1="26" y1="32" x2="28" y2="38"/>
-        </svg>
-      </div>
-      <div class="circuit-item">
-        <div class="circuit-num" style="background:#7C3AED;">5</div>
-        <div class="ex-name">Burpee (senza salto se serve)</div>
-        <svg class="ex-fig" viewBox="0 0 40 40" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="20" cy="6" r="3"/>
-          <line x1="20" y1="9" x2="20" y2="18"/>
-          <line x1="20" y1="14" x2="14" y2="10"/>
-          <line x1="20" y1="14" x2="26" y2="10"/>
-          <line x1="20" y1="18" x2="14" y2="28"/>
-          <line x1="20" y1="18" x2="26" y2="28"/>
-          <path d="M14 32 L20 24 L26 32" stroke-dasharray="2 2" opacity="0.4"/>
-        </svg>
-      </div>
-    </div>
-
-    <details class="exercise-detail" style="background:var(--bg);border-radius:10px;padding:12px 14px;border:1px solid var(--border);">
-      <summary>Note tecniche circuito casa</summary>
-      <div class="detail-text">
-        <strong>Thruster con manubri:</strong> manubri alle spalle, fai lo squat e mentre risali spingi le braccia in alto. Full body in un movimento. Peso moderato, ritmo costante.<br><br>
-        <strong>Mountain climber:</strong> posizione push-up, porta le ginocchia al petto alternando veloce. Core attivo, anca bassa.<br><br>
-        <strong>Burpee senza salto:</strong> se l'allergia ti dà problemi respiratori, elimina il salto finale — solo push-up a terra e rialzati. Stesso effetto cardio, meno impatto sulle vie aeree.
-      </div>
-    </details>
-
-    <div class="phase-label">Blocco 3: Gambe & Cammino — 12 min</div>
-
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round">
-            <circle cx="24" cy="8" r="4"/>
-            <line x1="24" y1="12" x2="24" y2="26"/>
-            <line x1="24" y1="26" x2="18" y2="34"/>
-            <line x1="18" y1="34" x2="18" y2="44"/>
-            <line x1="24" y1="26" x2="30" y2="34"/>
-            <line x1="30" y1="34" x2="30" y2="44"/>
-            <rect x="19" y="14" width="10" height="12" rx="2" opacity="0.2" fill="#7C3AED"/>
-            <rect x="19" y="14" width="10" height="12" rx="2" stroke-dasharray="2 2"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Squat con zaino caricato</div>
-          <div class="exercise-meta">3 × 15 · rec. 45s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Zaino sulle spalle con libri/bottiglie (5-10 kg). <strong>Scendi lento, sali deciso.</strong> Lo zaino simula il carico del Cammino — ti abitua a lavorare con peso sulla schiena mantenendo il busto dritto.
-        </div>
-      </details>
-    </div>
-
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round">
-            <rect x="6" y="26" width="16" height="14" rx="2" opacity="0.2" fill="#7C3AED" stroke="none"/>
-            <rect x="6" y="26" width="16" height="14" rx="2"/>
-            <circle cx="26" cy="8" r="4"/>
-            <line x1="26" y1="12" x2="26" y2="24"/>
-            <line x1="26" y1="24" x2="16" y2="24"/>
-            <line x1="26" y1="24" x2="32" y2="38"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Step-up su sedia + Calf raise</div>
-          <div class="exercise-meta">3 × 10/gamba + 3 × 20 calf · rec. 45s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          <strong>Step-up:</strong> sedia robusta o scalino. Piede intero, spingi col tallone. Con zaino se vuoi più carico.<br><br>
-          <strong>Calf raise:</strong> sullo scalino o bordo di un gradino. Scendi fino allo stretch completo, sali in punta. Muscolo n.1 per le discese del Cammino.
-        </div>
-      </details>
-    </div>
-
-    <div class="exercise">
-      <div class="exercise-top">
-        <div class="exercise-figure">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round">
-            <circle cx="20" cy="8" r="4"/>
-            <line x1="20" y1="12" x2="20" y2="26"/>
-            <line x1="20" y1="26" x2="14" y2="34"/>
-            <line x1="14" y1="34" x2="14" y2="42"/>
-            <line x1="20" y1="26" x2="30" y2="30"/>
-            <rect x="30" y="28" width="10" height="8" rx="2" opacity="0.2" fill="#7C3AED" stroke="none"/>
-            <rect x="30" y="28" width="10" height="8" rx="2"/>
-          </svg>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-name">Bulgarian split squat</div>
-          <div class="exercise-meta">3 × 8 per gamba · rec. 60s</div>
-        </div>
-      </div>
-      <details class="exercise-detail">
-        <summary>Come eseguire</summary>
-        <div class="detail-text">
-          Piede posteriore su sedia o divano, abbassati sulla gamba anteriore. <strong>Ginocchio in linea con la punta del piede, busto dritto.</strong> Potentissimo per glutei e quadricipiti. Unilaterale, quindi corregge anche le asimmetrie. Brucia parecchio — è normale.
-        </div>
-      </details>
-    </div>
-
-    <div class="phase-label">Chiusura: Stretching & postura — 10 min</div>
-
-    <div class="stretch-block">
-      <h4>🧘 Routine completa di chiusura</h4>
-      <ul>
-        <li><strong>Stretching pettorale nel vano porta:</strong> 30s per lato × 2</li>
-        <li><strong>Flessori anca:</strong> affondo basso, spingi bacino avanti, 30s per lato × 2</li>
-        <li><strong>Pigeon pose:</strong> gamba piegata davanti, l'altra distesa dietro. 45s per lato — apre le anche profondamente</li>
-        <li><strong>Child's pose braccia estese:</strong> 30s. Allunga schiena e spalle</li>
-        <li><strong>Chin tuck:</strong> 10 rep × 5s tenuta</li>
-        <li><strong>Cat-cow finali:</strong> 8 rep lente. Chiudi come hai aperto</li>
-        <li><strong>Respirazione diaframmatica:</strong> 5 respiri (4s inspira naso, 6s espira bocca)</li>
-      </ul>
-    </div>
-
-  </div>
-</div>
-
-<div class="section-title">Consigli pratici</div>
-
-<div class="tip-card">
-  <h3>🎒 Palestra affollata</h3>
-  <ul>
-    <li>Porta un <strong>elastico di resistenza</strong> nello zaino — puoi fare face pull e pull-apart ovunque</li>
-    <li>I manubri si liberano molto prima delle macchine — la scheda è costruita apposta</li>
-    <li>Se la panca è occupata → push-up. Se il vogatore è preso → ellittica. Non aspettare mai</li>
-    <li>Fai superset (es. rematore + chest press senza pausa) per risparmiare tempo</li>
-  </ul>
-</div>
-
-<div class="tip-card">
-  <h3>🪑 Postura fuori palestra</h3>
-  <ul>
-    <li><strong>Chin tuck ogni ora:</strong> metti un timer. 5 ripetizioni, 5s tenuta. 30 secondi che cambiano tutto</li>
-    <li><strong>Monitor all'altezza degli occhi,</strong> gomiti a 90° sulla tastiera</li>
-    <li><strong>Chitarra:</strong> ogni 20-30 min fermati, 5 chin tuck + apri il petto con le braccia</li>
-    <li><strong>Stretching nel vano porta:</strong> mani sugli stipiti, un passo avanti, 10 secondi ogni volta che passi</li>
-  </ul>
-</div>
-
-<div class="tip-card">
-  <h3>💡 Benefici del cardio</h3>
-  <p>150 min/settimana di attività moderata sono la raccomandazione per il profilo lipidico. Con questa scheda ci arrivi: ~10 min rowing + 15 min ellittica nei giorni A e C, più i 12-15 min del giorno B. Non è la cura (genetica, come dice la dietologa), ma l'HDL ("buono") beneficia dell'esercizio aerobico regolare.</p>
-</div>
-
-<div class="footer">
-  Scheda generata ad aprile 2026<br>
-  Rivalutare dopo il Cammino di Santiago 🥾
-</div>
-
-<script>
-function toggleDay(id) {
-  const card = document.getElementById(id);
-  card.classList.toggle('open');
-}
-// Open day A by default on load — already set via class
-</script>
-
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    const COLORS = { A: "#3B82F6", B: "#10B981", C: "#F59E0B", H: "#8B5CF6" };
+    const DAY_NAMES = { A: "Upper Body & Postura", B: "Lower Body & Cammino", C: "Circuito Full Body", H: "Sessione Casa" };
+    const DAY_SUBS = { A: "Catena posteriore · Spalle · Rowing", B: "Gambe · Polpacci · Core", C: "Cardio sostenuto · Endurance", H: "Manubri + corpo libero · 60 min" };
+
+    const WEEKS = [
+      { label: "Sett. 1–4", phase: "Base", note: "Pesi moderati, impara i movimenti. Ellittica 12 min. Circuito 3 giri." },
+      { label: "Sett. 5–8", phase: "Volume", note: "+1 serie dove indicato. Pesi ↑. Ellittica 18-20 min. Circuito 4 giri." },
+      { label: "Sett. 9–12", phase: "Endurance", note: "Circuito 5 giri. Ellittica 20-25 min. Tapis inclinato 10-12% se libero." },
+    ];
+
+    const P = "POSTURA";
+
+    const IMAGES = {
+      mobility: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&q=80&fit=crop",
+      rowing: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=150&q=80&fit=crop",
+      row: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=150&q=80&fit=crop",
+      facepull: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=150&q=80&fit=crop",
+      press: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=150&q=80&fit=crop",
+      farmer: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=150&q=80&fit=crop",
+      pullapart: "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=150&q=80&fit=crop",
+      elliptical: "https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=150&q=80&fit=crop",
+      squat: "https://images.unsplash.com/photo-1534438097545-a81d43a598c1?w=150&q=80&fit=crop",
+      lunge: "https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=150&q=80&fit=crop",
+      rdl: "https://images.unsplash.com/photo-1522898467493-49726bf28798?w=150&q=80&fit=crop",
+      stepup: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=150&q=80&fit=crop",
+      calf: "https://images.unsplash.com/photo-1581009137042-c552e485697a?w=150&q=80&fit=crop",
+      deadbug: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=150&q=80&fit=crop",
+      swing: "https://images.unsplash.com/photo-1526506346387-578d0554c0e6?w=150&q=80&fit=crop",
+      pushup: "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=150&q=80&fit=crop",
+      plank: "https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=150&q=80&fit=crop",
+      jumping: "https://images.unsplash.com/photo-1554284126-aa88f22d8b74?w=150&q=80&fit=crop",
+      ytw: "https://images.unsplash.com/photo-1544367567-0f2fcb046eeb?w=150&q=80&fit=crop"
+    };
+
+    const EXERCISES = {
+      A: [
+        { phase: "Riscaldamento — 5 min" },
+        { name: "Mobilità spalle & Wall Slides", meta: "3 min ellittica + 2×8 wall slides", icon: "mobility",
+          desc: "Wall slides: schiena e testa al muro, braccia a candelabro (gomiti 90°). Scorri in alto mantenendo il contatto col muro. Se non tocchi il muro con i polsi, è proprio lì che devi lavorare." },
+        { phase: "Blocco principale — 40 min" },
+        { name: "Vogatore (Rowing Machine)", meta: "10 min continui", tag: P, icon: "rowing",
+          desc: "Ritmo moderato costante. Tira con le scapole, non solo con le braccia. Petto fuori, sguardo avanti. Nella fase di trazione stringi le scapole come per tenere una matita tra loro. Resistenza media.",
+          alt: "Se occupato → ellittica 10 min" },
+        { name: "Rematore con manubrio", meta: "3 × 10 per lato · rec. 60s", tag: P, icon: "row", rest: 60,
+          desc: "Un ginocchio e una mano sulla panca, l'altro piede a terra. Tira il manubrio verso il fianco, non verso la spalla. In alto, stringi la scapola per 1 secondo pieno prima di scendere. Busto fermo, niente rotazioni. L'esercizio più importante della scheda per la postura." },
+        { name: "Face Pull al cavo", meta: "3 × 15 · rec. 45s", tag: P, icon: "facepull", rest: 45,
+          desc: "Cavo all'altezza del viso, corda o doppia maniglia. Tira verso la fronte aprendo le braccia a doppio bicipite. Gomiti più alti dei polsi. Concentrati sui deltoidi posteriori e trapezi medi. Peso leggero, tantissimo controllo.",
+          alt: "Se cavo occupato → reverse fly con manubri leggeri su panca a 30°" },
+        { name: "Chest Press con manubri", meta: "3 × 10-12 · rec. 60s", icon: "press", rest: 60,
+          desc: "Equilibrio muscolare: non solo tirare, anche spingere. Sulla panca, scapole addotte e depresse (strette e basse): attiva il giusto assetto posturale anche mentre spingi. Scendi controllato, spingi deciso.",
+          alt: "Se panca occupata → push-up a terra" },
+        { name: "Farmer's Walk", meta: "3 × 30-40 passi · rec. 60s", tag: P, icon: "farmer", rest: 60,
+          desc: "Due manubri pesanti, cammina. Spalle indietro e basse, petto fuori, sguardo dritto, core attivo. Niente oscillazioni del busto. Allena postura sotto carico, core, grip e circolazione periferica — mani e avambracci lavorano tantissimo." },
+        { name: "Pull-Apart con elastico", meta: "2 × 20 · rec. 30s", tag: P, icon: "pullapart", rest: 30,
+          desc: "Braccia tese davanti, impugnatura larghezza spalle. Apri le braccia tirando l'elastico verso il petto, stringendo le scapole in fondo. Torna lento. Elastico leggero — l'obiettivo è il volume. Portane uno nello zaino (costa 5€)." },
+        { phase: "Chiusura posturale — 5 min", stretch: true,
+          items: ["Stretching pettorale: braccio contro stipite, 30s/lato × 2", "Chin tuck: 2 × 10 rep, tenuta 5s — rinforza flessori del collo", "Stretching trapezio superiore: orecchio verso spalla, 30s/lato"] },
+      ],
+      B: [
+        { phase: "Riscaldamento — 5 min" },
+        { name: "Ellittica + mobilità anche", meta: "3 min ellittica + swing gambe + 2×10 glute bridge", icon: "mobility",
+          desc: "Swing gambe: 10 avanti/indietro + 10 laterali per gamba. Glute bridge: schiena a terra, piedi a terra, alza il bacino stringendo i glutei in alto." },
+        { phase: "Blocco principale — 40 min" },
+        { name: "Ellittica — resistenza progressiva", meta: "12-15 min → 20-25 min (sett. 9-12)", icon: "elliptical",
+          desc: "Ogni 3 minuti aumenta leggermente la resistenza. Simula i dislivelli del Cammino. Ritmo in cui puoi parlare ma con fatica. Nelle ultime settimane, allunga fino a 20-25 minuti." },
+        { name: "Goblet Squat", meta: "3 × 12 · rec. 60s", icon: "squat", rest: 60,
+          desc: "Manubrio al petto con entrambe le mani. Piedi larghezza spalle, punte aperte. Scendi lento (3 secondi), sali deciso. Il goblet ti obbliga a stare dritto — è anche posturale. Ginocchia in linea con le punte." },
+        { name: "Affondi camminati con manubri", meta: "3 × 10/gamba · rec. 60s", icon: "lunge", rest: 60,
+          desc: "Passo lungo, ginocchio posteriore sfiora il pavimento. Busto verticale, non piegarti avanti. Spingi col tallone della gamba davanti. Simula la camminata in salita.",
+          alt: "Se poco spazio → affondi sul posto alternando" },
+        { name: "Romanian Deadlift manubri", meta: "3 × 10 · rec. 60s", tag: P, icon: "rdl", rest: 60,
+          desc: "In piedi, manubri davanti alle cosce. Schiena neutra SEMPRE. Scendi piegando le anche (non la schiena), manubri scorrono lungo le gambe. Senti tirare i femorali. Risali stringendo i glutei. Insegna al corpo a piegarsi dal bacino." },
+        { name: "Step-up su panca con manubri", meta: "3 × 8/gamba · rec. 60s", icon: "stepup", rest: 60,
+          desc: "Panca ad altezza normale. Piede intero sulla panca, spingi col tallone. Non rimbalzare col piede a terra. Scendi controllato. Simula la salita con zaino — diretto per il Cammino." },
+        { name: "Calf Raise su step", meta: "3 × 20 · rec. 45s", icon: "calf", rest: 45,
+          desc: "Metatarsi sullo step, talloni fuori nel vuoto. Scendi per lo stretch completo, sali in punta di piedi. Lento, controllato. Aggiungi un manubrio quando facile. I polpacci ti salveranno sul Cammino: muscolo n.1 per camminare in discesa." },
+        { phase: "Core + postura — 10 min" },
+        { name: "Dead Bug + Bird-Dog", meta: "3 × 8 per lato ciascuno", tag: P, icon: "deadbug",
+          desc: "Dead bug: schiena a terra, braccia e ginocchia al cielo. Allunga braccio e gamba opposti — schiena incollata al pavimento. Bird-dog: a quattro zampe, allunga braccio e gamba opposti, busto fermo come un tavolo. Core profondo + stabilità." },
+        { phase: "Stretching finale — 5 min", stretch: true,
+          items: ["Flessori anca: affondo basso, bacino avanti, 30s/lato × 2", "Quadricipiti: tallone al gluteo, 30s/lato", "Polpacci: piede contro muro, 30s/lato"] },
+      ],
+      C: [
+        { phase: "Riscaldamento — 5 min" },
+        { name: "Ellittica + mobilità generale", meta: "3 min + rotazioni busto, anche, caviglie", icon: "mobility",
+          desc: "Ellittica leggera per alzare la temperatura, poi rotazioni del busto (10 per lato), circonduzioni anche (10 per lato), rotazioni caviglie (10 per lato)." },
+        { phase: "Circuito — 25 min · 4 giri", circuit: true, circuitNote: "40s lavoro / 20s transizione. Tra un giro e l'altro: 60s di recupero (cammina)." },
+        { name: "Kettlebell Swing", meta: "40s", icon: "swing", circuit: true,
+          desc: "Il re del cardio con pesi. La forza viene da anche e glutei, NON dalle braccia. Spingi le anche avanti esplosivamente, le braccia seguono. Se non c'è kettlebell, usa un manubrio impugnato verticalmente." },
+        { name: "Push-up", meta: "40s", icon: "pushup", circuit: true,
+          desc: "Varia ogni settimana: standard → larghi → diamante. Scapole addotte, scendi lento, spingi deciso. Qualità > quantità." },
+        { name: "Goblet Squat", meta: "40s", icon: "squat", circuit: true,
+          desc: "Stesso manubrio dello swing, transizione rapida. Busto dritto, scendi controllato." },
+        { name: "Rematore manubri (doppio)", meta: "40s", icon: "row", circuit: true,
+          desc: "In piedi, busto inclinato 45°. Tira entrambi i manubri verso i fianchi, scapole strette in alto. Mantieni la schiena neutra." },
+        { name: "Affondi alternati", meta: "40s", icon: "lunge", circuit: true,
+          desc: "A corpo libero, veloci ma controllati. Passo ampio, ginocchio posteriore verso il pavimento. Ritmo costante." },
+        { name: "Plank", meta: "40s", icon: "plank", circuit: true,
+          desc: "Non sopravvivere — attiva consciamente glutei e addome. Se 40s è facile, prova tocco spalla alternato mantenendo il bacino fermo." },
+        { phase: "Endurance finale — 15 min" },
+        { name: "Ellittica — ritmo costante", meta: "15 min · FC 130-150 bpm · +2 min/2 sett.", icon: "elliptical",
+          desc: "Ritmo moderato costante — zona parlare ma con fatica. Se hai un orologio con cardiofrequenzimetro, punta a 130-150 bpm. Ogni 2 settimane aggiungi 2 minuti. Costruisce la base aerobica per il Cammino." },
+        { phase: "Chiusura completa — 5 min", stretch: true,
+          items: ["Stretching pettorale + flessori anca + quadricipiti + polpacci", "Chin tuck: 10 rep × 5s tenuta", "Respirazione: 5 respiri (4s inspira, 6s espira)"] },
+      ],
+      H: [
+        { phase: "Mobilità & attivazione — 8 min" },
+        { name: "Sequenza mobilità posturale", meta: "~8 min senza pausa", tag: P, icon: "mobility",
+          desc: "Di fila: 1) Cat-cow 10 rep — inarca e arrotonda la schiena. 2) World's greatest stretch 5/lato — affondo, mano a terra, l'altra ruota al soffitto. 3) Wall slides 2×8. 4) Chin tuck 10 rep × 5s. 5) Glute bridge 2×12, stringi 2s in alto." },
+        { phase: "Forza posturale — 15 min" },
+        { name: "Reverse Fly con manubri", meta: "3 × 15 · rec. 30s", tag: P, icon: "facepull", rest: 30,
+          desc: "Busto inclinato a 45° (o seduto piegato avanti). Manubri leggeri, braccia pendono. Apri lateralmente, gomiti leggermente piegati, stringi le scapole in alto per 2 secondi. Peso leggero — senti deltoidi posteriori e romboidi, non braccia." },
+        { name: "Prone Y-T-W con manubri", meta: "2 × 8 per posizione · rec. 30s", tag: P, icon: "ytw", rest: 30,
+          desc: "A pancia in giù, fronte appoggiata. Y: braccia in alto a V, attiva trapezio basso (anti-gobba). T: braccia perpendicolari, solleva lateralmente (trapezio medio). W: gomiti a 90°, mani all'altezza orecchie (deltoidi post.). Tenuta 2s. Manubri leggerissimi." },
+        { name: "Push-up (3 varianti)", meta: "3 × 10-15 · rec. 45s", icon: "pushup", rest: 45,
+          desc: "Alterna le settimane: standard → larghi → diamante. Scapole addotte sempre. Scendi lento (3s), spingi deciso. Se fai 15+ facilmente, zaino con libri sulla schiena." },
+        { name: "Dead Bug + Superman", meta: "3 × 10/lato ciascuno · rec. 30s", tag: P, icon: "deadbug", rest: 30,
+          desc: "Dead bug: schiena a terra, braccio e gamba opposti si allungano, schiena incollata al pavimento. Superman: a pancia in giù, solleva braccia e gambe insieme, tenuta 3s. Rinforza erettori spinali, glutei, trapezi." },
+        { phase: "Cardio circuito — 20 min", circuit: true, circuitNote: "45s lavoro / 15s transizione · 4 giri. Recupero tra giri: 45s." },
+        { name: "Jumping Jack", meta: "45s", icon: "jumping", circuit: true, desc: "Classico ma efficace. Ritmo alto, braccia tese. Ottimo warmup cardio." },
+        { name: "Thruster con manubri", meta: "45s", icon: "squat", circuit: true, desc: "Manubri alle spalle, fai lo squat e mentre risali spingi le braccia in alto. Full body in un movimento. Peso moderato, ritmo costante." },
+        { name: "Mountain Climber", meta: "45s", icon: "plank", circuit: true, desc: "Posizione push-up, ginocchia al petto alternando veloce. Core attivo, anca bassa, ritmo sostenuto." },
+        { name: "Reverse Lunge alternato", meta: "45s", icon: "lunge", circuit: true, desc: "In piedi, fai un passo indietro in affondo. Alterna le gambe. Busto dritto. Controllato ma ritmico." },
+        { name: "Burpee (senza salto se serve)", meta: "45s", icon: "jumping", circuit: true, desc: "Se l'allergia dà problemi respiratori, elimina il salto — solo push-up a terra e rialzati. Stesso effetto cardio, meno impatto sulle vie aeree." },
+        { phase: "Gambe & Cammino — 12 min" },
+        { name: "Squat con zaino caricato", meta: "3 × 15 · rec. 45s", icon: "squat", rest: 45,
+          desc: "Zaino sulle spalle con libri/bottiglie (5-10 kg). Scendi lento, sali deciso. Simula il carico del Cammino — ti abitua a lavorare con peso sulla schiena, busto dritto." },
+        { name: "Step-up su sedia + Calf Raise", meta: "3 × 10/gamba + 3 × 20 calf · rec. 45s", icon: "stepup", rest: 45,
+          desc: "Step-up: sedia robusta, piede intero, spingi col tallone. Con zaino per più carico. Calf raise: sullo scalino, scendi fino allo stretch, sali in punta. Muscolo n.1 per le discese del Cammino." },
+        { name: "Bulgarian Split Squat", meta: "3 × 8/gamba · rec. 60s", icon: "lunge", rest: 60,
+          desc: "Piede posteriore su sedia o divano, abbassati sulla gamba anteriore. Ginocchio in linea con punta del piede, busto dritto. Potentissimo per glutei e quadricipiti. Unilaterale = corregge asimmetrie. Brucia parecchio, è normale." },
+        { phase: "Stretching & postura — 10 min", stretch: true,
+          items: ["Stretching pettorale nel vano porta: 30s/lato × 2", "Flessori anca: affondo basso, 30s/lato × 2", "Pigeon pose: 45s/lato — apre le anche", "Child's pose braccia estese: 30s", "Chin tuck: 10 rep × 5s", "Cat-cow finali: 8 rep lente", "Respirazione: 5 respiri (4s inspira, 6s espira)"] },
+      ],
+    };
+
+    function Timer({ seconds: initSec, color, onDone }) {
+      const [left, setLeft] = useState(initSec);
+      const [running, setRunning] = useState(false);
+      const ref = useRef(null);
+
+      useEffect(() => { setLeft(initSec); setRunning(false); }, [initSec]);
+
+      useEffect(() => {
+        if (!running || left <= 0) return;
+        ref.current = setTimeout(() => setLeft(l => l - 1), 1000);
+        return () => clearTimeout(ref.current);
+      }, [running, left]);
+
+      useEffect(() => {
+        if (left === 0 && running) {
+          setRunning(false);
+          onDone?.();
+          if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        }
+      }, [left, running]);
+
+      const pct = initSec > 0 ? left / initSec : 0;
+      const r = 22, circ = 2 * Math.PI * r;
+
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
+          <div style={{ position: "relative", width: 52, height: 52, flexShrink: 0 }}>
+            <svg width="52" height="52" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r={r} fill="none" stroke="#2A2A2E" strokeWidth="4"/>
+              <circle cx="26" cy="26" r={r} fill="none" stroke={color} strokeWidth="4"
+                strokeDasharray={circ} strokeDashoffset={circ * (1 - pct)}
+                strokeLinecap="round" transform="rotate(-90 26 26)"
+                style={{ transition: "stroke-dashoffset 0.3s" }}/>
+            </svg>
+            <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "'Outfit',sans-serif", fontWeight: 600, fontSize: 15, color: "#F5F5F5" }}>
+              {left}
+            </span>
+          </div>
+          <button onClick={() => setRunning(r => !r)}
+            style={{ padding: "6px 16px", borderRadius: 8, border: "none", background: running ? "#2A2A2E" : color,
+              color: "#fff", fontFamily: "'Outfit',sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer",
+              transition: "background 0.2s" }}>
+            {running ? "Pausa" : left < initSec && left > 0 ? "Riprendi" : "Avvia"}
+          </button>
+          {left < initSec && (
+            <button onClick={() => { setLeft(initSec); setRunning(false); }}
+              style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #2A2A2E", background: "transparent",
+                color: "#8B8B8E", fontSize: 12, cursor: "pointer", fontFamily: "'Outfit',sans-serif" }}>
+              Reset
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    function ExerciseCard({ ex, color, done, onToggle }) {
+      const [open, setOpen] = useState(false);
+      const imgUrl = IMAGES[ex.icon];
+
+      return (
+        <div style={{
+          background: ex.tag === P ? "linear-gradient(135deg, #1E1E30 0%, #161618 100%)" : "#161618",
+          borderRadius: 14, padding: "14px 16px", marginBottom: 8,
+          border: ex.tag === P ? `1px solid ${color}33` : "1px solid #222225",
+          opacity: done ? 0.6 : 1, transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          boxShadow: done ? "none" : `0 4px 12px ${color}0A`,
+          transform: done ? "scale(0.98)" : "scale(1)"
+        }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+            <button onClick={onToggle} style={{
+              width: 26, height: 26, borderRadius: 8, flexShrink: 0, marginTop: 4, cursor: "pointer",
+              border: done ? "none" : `2px solid ${color}88`, background: done ? color : "transparent",
+              display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s",
+            }}>
+              {done && <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M3 7l3 3 5-5.5"/></svg>}
+            </button>
+            {imgUrl && (
+              <img src={imgUrl} alt={ex.name} style={{ 
+                width: 56, height: 56, flexShrink: 0, borderRadius: 10, objectFit: "cover",
+                border: `1px solid ${color}33`, opacity: done ? 0.5 : 1
+              }} />
+            )}
+            <div style={{ flex: 1, minWidth: 0, cursor: "pointer" }} onClick={() => setOpen(o => !o)}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: done ? "#999" : "#F5F5F5", fontFamily: "'Outfit',sans-serif" }}>
+                  {ex.name}
+                </span>
+                {ex.tag === P && (
+                  <span style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5,
+                    background: `${color}22`, color, padding: "2px 7px", borderRadius: 4 }}>POSTURA</span>
+                )}
+              </div>
+              <div style={{ fontSize: 13, color: done ? "#777" : color, fontFamily: "'JetBrains Mono','DM Mono',monospace", fontWeight: 500, marginTop: 2 }}>
+                {ex.meta}
+              </div>
+            </div>
+            <svg onClick={() => setOpen(o => !o)} width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#666" strokeWidth="2"
+              strokeLinecap="round" style={{ flexShrink: 0, marginTop: 8, cursor: "pointer",
+                transform: open ? "rotate(180deg)" : "none", transition: "transform 0.25s" }}>
+              <polyline points="4 7 9 12 14 7"/>
+            </svg>
+          </div>
+
+          {open && (
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #222225" }}>
+              <p style={{ fontSize: 13, color: "#BBBBBE", lineHeight: 1.6 }}>{ex.desc}</p>
+              {ex.alt && (
+                <p style={{ fontSize: 12, color: "#F59E0B", marginTop: 8, fontWeight: 500 }}>⟳ {ex.alt}</p>
+              )}
+              {ex.rest && <Timer seconds={ex.rest} color={color} />}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function DayView({ dayKey, completions, setCompletions }) {
+      const exercises = EXERCISES[dayKey];
+      const color = COLORS[dayKey];
+
+      const toggle = useCallback((i) => {
+        if (navigator.vibrate) navigator.vibrate(40);
+        
+        setCompletions(c => {
+          const k = dayKey;
+          const s = new Set(c[k] || []);
+          s.has(i) ? s.delete(i) : s.add(i);
+          return { ...c, [k]: s };
+        });
+      }, [dayKey, setCompletions]);
+
+      const exCount = exercises.filter(e => e.name && !e.circuit).length;
+      const doneCount = (completions[dayKey] || new Set()).size;
+      const isAllDone = doneCount === exCount && exCount > 0;
+
+      return (
+        <div style={{ paddingBottom: 20 }}>
+          <div style={{ padding: "24px 20px 16px", background: `linear-gradient(135deg, ${color}18 0%, transparent 100%)` }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <div style={{ width: 42, height: 42, borderRadius: 12, background: color,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontFamily: "'Outfit',sans-serif", fontWeight: 700, fontSize: 18, color: "#fff" }}>
+                {dayKey === "H" ? "🏠" : dayKey}
+              </div>
+              <div>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: "#F5F5F5", fontFamily: "'Outfit',sans-serif", margin: 0 }}>
+                  {DAY_NAMES[dayKey]}
+                </h2>
+                <p style={{ fontSize: 12, color: "#8B8B8E", margin: 0 }}>{DAY_SUBS[dayKey]}</p>
+              </div>
+            </div>
+
+            {exCount > 0 && (
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, color: "#8B8B8E", fontWeight: 600 }}>{doneCount} su {exCount} completati</span>
+                </div>
+                <div style={{ height: 6, borderRadius: 3, background: "#222225", overflow: "hidden" }}>
+                  <div style={{ height: "100%", borderRadius: 3, background: color, width: `${(doneCount/exCount)*100}%`, transition: "width 0.5s cubic-bezier(0.4, 0, 0.2, 1)" }}/>
+                </div>
+                
+                {isAllDone && (
+                   <div style={{
+                      marginTop: 14, padding: "10px 14px", background: `${color}22`, 
+                      border: `1px solid ${color}55`, borderRadius: 10, display: "flex", 
+                      alignItems: "center", gap: 10, animation: "popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+                   }}>
+                      <span style={{ fontSize: 24 }}>🔥</span>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: 14, color: "#fff", fontFamily: "'Outfit',sans-serif" }}>Allenamento Distrutto!</h4>
+                        <p style={{ margin: 0, fontSize: 12, color: "#AAA" }}>Ottimo lavoro, goditi il meritato riposo.</p>
+                      </div>
+                   </div>
+                )}
+                <style>
+                  {`@keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }`}
+                </style>
+              </div>
+            )}
+          </div>
+
+          <div style={{ padding: "0 12px" }}>
+            {exercises.map((ex, i) => {
+              if (ex.phase) {
+                if (ex.stretch) {
+                  return (
+                    <div key={i}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "20px 4px 12px", color: "#8B8B8E",
+                        fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>
+                        <span>🧘 {ex.phase}</span>
+                        <div style={{ flex: 1, height: 1, background: "#222225" }}/>
+                      </div>
+                      <div style={{ background: "#111113", borderRadius: 12, padding: "14px 16px", border: "1px dashed #2A2A2E", marginBottom: 8 }}>
+                        {ex.items?.map((item, j) => (
+                          <p key={j} style={{ fontSize: 13, color: "#9B9B9E", padding: "4px 0 4px 16px", position: "relative", lineHeight: 1.5, margin: 0 }}>
+                            <span style={{ position: "absolute", left: 0, color }}>•</span>
+                            <span dangerouslySetInnerHTML={{ __html: item.replace(/^([^:]+:)/, '<strong style="color:#DDDDE0">$1</strong>') }}/>
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, margin: "24px 4px 12px" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "#8B8B8E" }}>{ex.phase}</span>
+                    <div style={{ flex: 1, height: 1, background: "#222225" }}/>
+                    {ex.circuit && ex.circuitNote && null}
+                  </div>
+                );
+              }
+              if (ex.circuit && !ex.name) return null;
+              if (ex.circuit) {
+                return (
+                  <div key={i} style={{
+                    display: "flex", alignItems: "center", gap: 12,
+                    background: "#111113", borderRadius: 10, padding: "12px 14px", marginBottom: 8,
+                    border: "1px solid #1A1A1E",
+                  }}>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: color,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontFamily: "monospace", fontSize: 13, fontWeight: 600, color: "#fff", flexShrink: 0 }}>
+                      {exercises.filter((e2, j) => j < i && e2.circuit && e2.name).length + 1}
+                    </div>
+                    {IMAGES[ex.icon] && <img src={IMAGES[ex.icon]} alt={ex.name} style={{ width: 40, height: 40, flexShrink: 0, borderRadius: 8, objectFit: "cover" }}/>}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#E5E5E5" }}>{ex.name}</div>
+                      <div style={{ fontSize: 12, color: "#8B8B8E", marginTop: 2 }}>{ex.desc?.slice(0, 80)}…</div>
+                    </div>
+                  </div>
+                );
+              }
+              const exIdx = exercises.filter((e2, j) => j <= i && e2.name && !e2.circuit).length - 1;
+              return <ExerciseCard key={i} ex={ex} color={color} done={(completions[dayKey] || new Set()).has(exIdx)} onToggle={() => toggle(exIdx)} />;
+            })}
+            {exercises.some(e => e.circuitNote) && (
+              <div style={{ background: "#161618", borderLeft: `3px solid ${color}`, padding: "10px 14px", borderRadius: "0 8px 8px 0", marginTop: 12 }}>
+                <p style={{ fontSize: 13, color: "#8B8B8E", margin: 0, lineHeight: 1.5 }}>
+                  <strong style={{ color: "#E5E5E5" }}>Formato Circuito: </strong>
+                  {exercises.find(e => e.circuitNote)?.circuitNote}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    function TipsView() {
+      const tips = [
+        { icon: "🎒", title: "Palestra affollata", items: [
+          "I manubri si liberano prima delle macchine — la scheda è costruita apposta",
+          "Se la panca è occupata → push-up. Vogatore preso → ellittica. Non aspettare mai",
+          "Fai superset (es. rematore + chest press senza pausa) per risparmiare tempo",
+        ]},
+        { icon: "🪑", title: "Postura fuori palestra", items: [
+          "Chin tuck ogni ora: metti un timer. 5 rep, 5s tenuta. 30 secondi che cambiano tutto",
+          "Monitor all'altezza degli occhi, gomiti a 90° sulla tastiera",
+          "Chitarra: ogni 20-30 min fermati, 5 chin tuck + apri il petto",
+          "Stretching nel vano porta: mani sugli stipiti, passo avanti, 10 secondi",
+        ]},
+        { icon: "❤️", title: "Benefici del cardio", items: [
+          "150 min/settimana di attività moderata sono la raccomandazione standard",
+          "Con questa scheda ci arrivi: rowing + ellittica nei giorni A/C + endurance giorno B",
+          "L'HDL (colesterolo buono) beneficia dell'esercizio aerobico regolare",
+        ]},
+        { icon: "🥾", title: "Preparazione Cammino", items: [
+          "Le gambe del giorno B simulano direttamente i movimenti del Cammino con zaino",
+          "I calf raise sono il muscolo chiave per le discese — non saltarli mai",
+          "L'endurance progressiva (da 12 a 25 min) costruisce la base aerobica",
+          "Lo zaino caricato nella routine casa ti abitua al peso sulla schiena",
+        ]},
+      ];
+
+      return (
+        <div style={{ padding: "20px 12px" }}>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: "#F5F5F5", fontFamily: "'Outfit',sans-serif", margin: "0 6px 20px" }}>
+            Consigli & Progressione
+          </h2>
+          <div style={{ background: "#161618", borderRadius: 16, border: "1px solid #222225", padding: "16px", marginBottom: 16 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: "#F5F5F5", fontFamily: "'Outfit',sans-serif", margin: "0 0 16px" }}>
+              📈 Progressione 12 settimane
+            </h3>
+            {WEEKS.map((w, i) => (
+              <div key={i} style={{ padding: "12px 0", borderTop: i > 0 ? "1px solid #222225" : "none" }}>
+                <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 6 }}>
+                  <span style={{ fontSize: 13, fontFamily: "'JetBrains Mono',monospace", color: "#3B82F6", fontWeight: 600 }}>{w.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#F5F5F5", textTransform: "uppercase", letterSpacing: 0.5,
+                    background: "#222225", padding: "3px 8px", borderRadius: 6 }}>{w.phase}</span>
+                </div>
+                <p style={{ fontSize: 13, color: "#9B9B9E", margin: 0, lineHeight: 1.6 }}>{w.note}</p>
+              </div>
+            ))}
+          </div>
+          {tips.map((t, i) => (
+            <div key={i} style={{ background: "#161618", borderRadius: 16, border: "1px solid #222225", padding: "16px", marginBottom: 12 }}>
+              <h3 style={{ fontSize: 15, fontWeight: 600, color: "#F5F5F5", fontFamily: "'Outfit',sans-serif", margin: "0 0 12px" }}>
+                {t.icon} {t.title}
+              </h3>
+              {t.items.map((item, j) => (
+                <p key={j} style={{ fontSize: 13, color: "#9B9B9E", padding: "4px 0 4px 20px", position: "relative", lineHeight: 1.5, margin: 0 }}>
+                  <span style={{ position: "absolute", left: 0, color: "#3B82F6", fontWeight: 600 }}>→</span>
+                  {item}
+                </p>
+              ))}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    function App() {
+      const [tab, setTab] = useState("A");
+      
+      const [completions, setCompletions] = useState(() => {
+        try {
+          const saved = localStorage.getItem("trainingApp_completions");
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            const hydrated = {};
+            for (const [k, v] of Object.entries(parsed)) hydrated[k] = new Set(v);
+            return hydrated;
+          }
+        } catch(e) {}
+        return {};
+      });
+
+      useEffect(() => {
+        const storable = {};
+        for (const [k, v] of Object.entries(completions)) storable[k] = Array.from(v);
+        localStorage.setItem("trainingApp_completions", JSON.stringify(storable));
+      }, [completions]);
+
+      const tabs = [
+        { key: "A", label: "A", color: COLORS.A },
+        { key: "B", label: "B", color: COLORS.B },
+        { key: "C", label: "C", color: COLORS.C },
+        { key: "H", label: "🏠", color: COLORS.H },
+        { key: "tips", label: "💡", color: "#8B8B8E" },
+      ];
+
+      const resetDay = () => {
+        if(window.confirm("Sei sicuro di voler azzerare le spunte di questa scheda?")) {
+          setCompletions(c => ({ ...c, [tab]: new Set() }));
+        }
+      };
+
+      return (
+        <div style={{ fontFamily: "'DM Sans',-apple-system,sans-serif", background: "#0A0A0B", color: "#F5F5F5",
+          minHeight: "100vh", maxWidth: 500, margin: "0 auto", position: "relative", paddingBottom: 85,
+          WebkitFontSmoothing: "antialiased" }}>
+          <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+          {/* Header */}
+          <div style={{ padding: "24px 20px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", 
+              position: "sticky", top: 0, zIndex: 50, background: "rgba(10, 10, 11, 0.8)", backdropFilter: "blur(12px)" }}>
+            <div>
+              <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0, fontFamily: "'Outfit',sans-serif", letterSpacing: -0.5 }}>
+                Scheda Allenamento
+              </h1>
+              <p style={{ fontSize: 13, color: "#8B8B8E", margin: "4px 0 0" }}>Apr → Giu 2026 · 3×/sett.</p>
+            </div>
+            {tab !== "tips" && (
+              <button onClick={resetDay} style={{ fontSize: 12, fontWeight: 600, color: "#8B8B8E", background: "#161618", border: "1px solid #222",
+                borderRadius: 8, padding: "8px 12px", cursor: "pointer", fontFamily: "'Outfit',sans-serif", transition: "all 0.2s" }}>
+                Azzera Scheda
+              </button>
+            )}
+          </div>
+
+          {/* Objective pills */}
+          <div style={{ display: "flex", gap: 8, padding: "0 20px 16px", overflowX: "auto" }}>
+            {[["🎯 Postura", "#3B82F6"], ["❤️ Cardio", "#10B981"], ["🥾 Cammino", "#F59E0B"]].map(([l, c]) => (
+              <span key={l} style={{ flexShrink: 0, padding: "6px 14px", borderRadius: 20, fontSize: 12,
+                fontWeight: 700, background: `${c}1A`, color: c, letterSpacing: 0.3, border: `1px solid ${c}33` }}>{l}</span>
+            ))}
+          </div>
+
+          {/* Content */}
+          {tab === "tips" ? <TipsView /> : <DayView dayKey={tab} completions={completions} setCompletions={setCompletions} />}
+
+          {/* Bottom Nav */}
+          <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
+            width: "100%", maxWidth: 500, background: "rgba(10, 10, 11, 0.9)", borderTop: "1px solid #1A1A1E",
+            display: "flex", justifyContent: "space-around", padding: "10px 0 max(10px, env(safe-area-inset-bottom))",
+            zIndex: 100, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
+            {tabs.map(t => (
+              <button key={t.key} onClick={() => setTab(t.key)}
+                style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                  background: "none", border: "none", cursor: "pointer", padding: "6px 0",
+                  WebkitTapHighlightColor: "transparent" }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 12,
+                  background: tab === t.key ? t.color : "transparent",
+                  border: tab === t.key ? "none" : "1px solid #222225",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontFamily: "'Outfit',monospace", fontWeight: 700, fontSize: t.label.length > 1 ? 18 : 16,
+                  color: tab === t.key ? "#fff" : "#666", transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                  transform: tab === t.key ? "scale(1.1)" : "scale(1)"
+                }}>{t.label}</div>
+                {t.key !== "tips" && t.key !== "H" && (
+                  <span style={{ fontSize: 10, color: tab === t.key ? t.color : "#555", fontWeight: 700, textTransform: "uppercase" }}>
+                    {t.key === "A" ? "Upper" : t.key === "B" ? "Lower" : "Circuit"}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
